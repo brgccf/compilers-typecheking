@@ -259,23 +259,28 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// int i;
 	public Type visit(IntegerLiteral n) {
+		n.accept(this);
 		return null;
 	}
 
 	public Type visit(True n) {
+		n.accept(this);
 		return null;
 	}
 
 	public Type visit(False n) {
+		n.accept(this);
 		return null;
 	}
 
 	// String s;
 	public Type visit(IdentifierExp n) {
+		n.accept(this);
 		return null;
 	}
 
 	public Type visit(This n) {
+		n.accept(this);
 		return null;
 	}
 
@@ -287,6 +292,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// Identifier i;
 	public Type visit(NewObject n) {
+		n.i.accept(this);
 		return null;
 	}
 
@@ -298,6 +304,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// String s;
 	public Type visit(Identifier n) {
+		n.accept(this);
 		return null;
 	}
 }

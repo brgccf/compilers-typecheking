@@ -12,8 +12,10 @@ import ast.Assign;
 import ast.Block;
 import ast.BooleanType;
 import ast.Call;
+import ast.ClassDecl;
 import ast.ClassDeclExtends;
 import ast.ClassDeclSimple;
+import ast.Exp;
 import ast.False;
 import ast.Formal;
 import ast.Identifier;
@@ -42,7 +44,7 @@ import ast.While;
 public class BuildSymbolTableVisitor implements Visitor {
 
 	SymbolTable symbolTable;
-
+	
 	public BuildSymbolTableVisitor() {
 		symbolTable = new SymbolTable();
 	}
@@ -53,6 +55,17 @@ public class BuildSymbolTableVisitor implements Visitor {
 
 	private Class currClass;
 	private Method currMethod;
+	
+	public void visit(ClassDecl n)
+	{
+		symbolTable.addClass(n.toString(), currClass.toString());
+		n.accept(this);
+	}
+	
+	public void visit(Exp e)
+	{
+		e.accept(this);
+	}
 
 	// MainClass m;
 	// ClassDeclList cl;
@@ -113,6 +126,7 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// StatementList sl;
 	// Exp e;
 	public void visit(MethodDecl n) {
+		symbolTable.addClass(n.toString(), currMethod.toString());
 		n.t.accept(this);
 		n.i.accept(this);
 		for (int i = 0; i < n.fl.size(); i++) {
