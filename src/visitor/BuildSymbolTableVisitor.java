@@ -135,16 +135,20 @@ public class BuildSymbolTableVisitor implements Visitor {
 	}
 
 	public void visit(IntArrayType n) {
+		n.accept(this);
 	}
 
 	public void visit(BooleanType n) {
+		n.accept(this);
 	}
 
 	public void visit(IntegerType n) {
+		n.accept(this);
 	}
 
 	// String s;
 	public void visit(IdentifierType n) {
+		n.accept(this);
 	}
 
 	// StatementList sl;
@@ -243,19 +247,24 @@ public class BuildSymbolTableVisitor implements Visitor {
 
 	// int i;
 	public void visit(IntegerLiteral n) {
+		n.accept(this);
 	}
 
 	public void visit(True n) {
+		n.accept(this);
 	}
 
 	public void visit(False n) {
+		n.accept(this);
 	}
 
 	// String s;
 	public void visit(IdentifierExp n) {
+		n.accept(this);
 	}
 
 	public void visit(This n) {
+		n.accept(this);
 	}
 
 	// Exp e;
@@ -265,6 +274,7 @@ public class BuildSymbolTableVisitor implements Visitor {
 
 	// Identifier i;
 	public void visit(NewObject n) {
+		n.i.accept(this);
 	}
 
 	// Exp e;
@@ -274,5 +284,6 @@ public class BuildSymbolTableVisitor implements Visitor {
 
 	// String s;
 	public void visit(Identifier n) {
+		n.accept(this);
 	}
 }
