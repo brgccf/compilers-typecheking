@@ -79,9 +79,15 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// Identifier i1,i2;
 	// Statement s;
 	public void visit(MainClass n) {
+		symbolTable.addClass(n.i1.s, null);
+		this.currClass = symbolTable.getClass(n.i1.s);
+		this.currClass.addMethod("main", null);
+		this.currMethod = this.currClass.getMethod("main");
+		this.currMethod.addParam(n.i2.s, null);
 		n.i1.accept(this);
 		n.i2.accept(this);
 		n.s.accept(this);
+		this.currMethod = null;
 	}
 
 	// Identifier i;
