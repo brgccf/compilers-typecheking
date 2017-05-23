@@ -1,6 +1,8 @@
 package main;
 import ast.*;
+import visitor.BuildSymbolTableVisitor;
 import visitor.PrettyPrintVisitor;
+import visitor.TypeCheckVisitor;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -20,7 +22,11 @@ public class Main {
 		System.out.println(tree.toStringTree(parser));
 		ASTBuilder visitor = new ASTBuilder();
 		Program program = (Program) visitor.visit(tree);
-		program.accept(new PrettyPrintVisitor());
+		PrettyPrintVisitor pt = new PrettyPrintVisitor();
+		program.accept(pt);
+		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
+		program.accept(stVis);
+		program.accept(new TypeCheckVisitor(stVis.getSymbolTable()));
 	}
 
 }
