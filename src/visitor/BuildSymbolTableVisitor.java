@@ -142,8 +142,8 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// StatementList sl;
 	// Exp e;
 	public void visit(MethodDecl n) {
-		n.t.accept(this);
-		n.i.accept(this);
+		//n.t.accept(this);
+		//n.i.accept(this);
 		this.currClass.addMethod(n.i.s, n.t);
 		this.currMethod = this.currClass.getMethod(n.i.s);
 		for (int i = 0; i < n.fl.size(); i++) {
