@@ -123,7 +123,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 	public Type visit(MethodDecl n) {
 		this.currMethod = this.symbolTable.getMethod(n.i.s, this.currClass.getId());
 		
-		//n.t.accept(this);
+		n.t.accept(this);
 		//n.i.accept(this);
 		Type t = symbolTable.getMethodType(n.i.s, this.currClass.getId());
 		for (int i = 0; i < n.fl.size(); i++) {
@@ -148,7 +148,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 	}
 
 	public Type visit(IntArrayType n) {
-		return new IntArrayType();
+		return new IntegerType();
 	}
 
 	public Type visit(BooleanType n) {
@@ -211,12 +211,16 @@ public class TypeCheckVisitor implements TypeVisitor {
 		//n.i.accept(this);
 		//n.e.accept(this);
 		Type t1 = n.i.accept(this);
+		if(symbolTable.compareTypes(t1, new IntArrayType()))
+		{
+			t1 = new IntegerType();
+		}
 		Type t2 = n.e.accept(this);
 		boolean result = this.symbolTable.compareTypes(t1, t2);
 		if(!result)
 		{
-			System.out.println("There was a type error on Assignment " + n.toString());
-			System.exit(0);
+			System.out.println("There was a type error on Assignment " + n.e.toString());
+			//System.exit(0);
 		}
 		return null;
 	}
@@ -238,7 +242,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 		equal = true && this.symbolTable.compareTypes(new BooleanType(), t2);
 		if(!equal)
 		{
-			System.out.println("There was a type error on Expression And " + n.toString());
+			System.out.println("There was a type error on Expression And " + n.e1.toString() + " " + n.e2.toString());
 		}
 		return new BooleanType();
 	}
@@ -253,7 +257,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 		equal = true && this.symbolTable.compareTypes(new IntegerType(), t2);
 		if(!equal)
 		{
-			System.out.println("There was a Type error in Expression " + n.toString());
+			System.out.println("There was a Type error in Expression " + n.e1.toString() + " " + n.e2.toString());
 		}
 		
 		return new BooleanType();
@@ -267,7 +271,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 		equal = true && this.symbolTable.compareTypes(new IntegerType(), t2);
 		if(!equal)
 		{
-			System.out.println("There was a type error in expression " + n.toString());
+			System.out.println("There was a type error in expression " + n.e1.toString() + " " + n.e2.toString());
 		}
 		return new IntegerType();
 	}
@@ -280,7 +284,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 		equal = true && this.symbolTable.compareTypes(new IntegerType(), t2);
 		if(!equal)
 		{
-			System.out.println("There was a type error in expression " + n.toString());
+			System.out.println("There was a type error in expression " + n.e1.toString() + " " + n.e2.toString());
 		}
 		return new IntegerType();
 	}
@@ -293,7 +297,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 		equal = true && this.symbolTable.compareTypes(new IntegerType(), t2);
 		if(!equal)
 		{
-			System.out.println("There was a type error in expression " + n.toString());
+			System.out.println("There was a type error in expression " + n.e1.toString() + " " + n.e2.toString());
 		}
 		return new IntegerType();
 	}
@@ -301,7 +305,12 @@ public class TypeCheckVisitor implements TypeVisitor {
 	// Exp e1,e2;
 	public Type visit(ArrayLookup n) {
 		n.e1.accept(this);
-		n.e2.accept(this);
+		Type t = n.e2.accept(this);
+		boolean equal = this.symbolTable.compareTypes(t, new IntegerType());
+		if(!equal)
+		{
+			System.out.println("There was a type error on array lookup" + n.e1.toString() + " " + n.e2.toString());
+		}
 		return new IntegerType();
 	}
 
@@ -337,17 +346,14 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// int i;
 	public Type visit(IntegerLiteral n) {
-		//n.accept(this);
 		return new IntegerType();
 	}
 
 	public Type visit(True n) {
-		n.accept(this);
 		return new BooleanType();
 	}
 
 	public Type visit(False n) {
-		n.accept(this);
 		return new BooleanType();
 	}
 
@@ -370,7 +376,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// Identifier i;
 	public Type visit(NewObject n) {
-		n.i.accept(this);
+		//n.i.accept(this);
 		this.currClass = this.symbolTable.getClass(n.i.s);
 		this.currMethod = null;
 		return null;
@@ -378,7 +384,11 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// Exp e;
 	public Type visit(Not n) {
-		n.e.accept(this);
+		Type t = n.e.accept(this);
+		if(!this.symbolTable.compareTypes(t, new BooleanType()))
+		{
+			System.out.println("No boolean inside negation " + n.e.toString());
+		}
 		return new BooleanType();
 	}
 

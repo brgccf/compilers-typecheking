@@ -19,7 +19,7 @@ public class Main {
 		CommonTokenStream token = new CommonTokenStream(lexer);
 		brgccf_lfp2Parser parser = new brgccf_lfp2Parser(token);
 		ParseTree tree = parser.goal();
-		System.out.println(tree.toStringTree(parser));
+		//System.out.println(tree.toStringTree(parser));
 		ASTBuilder visitor = new ASTBuilder();
 		Program program = (Program) visitor.visit(tree);
 		PrettyPrintVisitor pt = new PrettyPrintVisitor();

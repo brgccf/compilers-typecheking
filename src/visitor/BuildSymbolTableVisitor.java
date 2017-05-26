@@ -3,7 +3,6 @@ package visitor;
 import symboltable.SymbolTable;
 import symboltable.Class;
 import symboltable.Method;
-import symboltable.Variable;
 import ast.And;
 import ast.ArrayAssign;
 import ast.ArrayLength;
@@ -12,10 +11,8 @@ import ast.Assign;
 import ast.Block;
 import ast.BooleanType;
 import ast.Call;
-import ast.ClassDecl;
 import ast.ClassDeclExtends;
 import ast.ClassDeclSimple;
-import ast.Exp;
 import ast.False;
 import ast.Formal;
 import ast.Identifier;
@@ -56,11 +53,6 @@ public class BuildSymbolTableVisitor implements Visitor {
 	private Class currClass;
 	private Method currMethod;
 	
-	public void visit(ClassDecl n)
-	{
-		symbolTable.addClass(n.toString(), currClass.toString());
-		n.accept(this);
-	}
 
 	// MainClass m;
 	// ClassDeclList cl;
@@ -142,8 +134,8 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// StatementList sl;
 	// Exp e;
 	public void visit(MethodDecl n) {
-		//n.t.accept(this);
-		//n.i.accept(this);
+		n.t.accept(this);
+		n.i.accept(this);
 		this.currClass.addMethod(n.i.s, n.t);
 		this.currMethod = this.currClass.getMethod(n.i.s);
 		for (int i = 0; i < n.fl.size(); i++) {
