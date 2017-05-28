@@ -67,11 +67,20 @@ public class ASTBuilder extends brgccf_lfp2BaseVisitor<Object>{
 		List<TerminalNode> tokens = ctx.Identifier();
 		Type type = this.visitType(types.get(0));
 		Identifier name = new Identifier(tokens.get(0).getText());
+		
 		for(int i = 1; i< types.size();i++){
 			args.addElement(new Formal(this.visitType(types.get(i)),new Identifier(tokens.get(i).getText())));
 		}
 		VarDeclList vars = this.visitVarDeclList(ctx.varDeclaration());
+		for(int i = 0; i < ctx.varDeclaration().size(); i++)
+		{
+			vars.addElement(this.visitVarDecl(ctx.varDeclaration().get(i)));
+		}
 		StatementList stmts = this.visitStatementList(ctx.statement());
+		for(int i = 0; i < ctx.varDeclaration().size(); i++)
+		{
+			stmts.addElement(this.visitStatement(ctx.statement().get(i)));
+		}
 		Exp exp = this.visitExp(ctx.expression());
 		return new MethodDecl(type,name,args,vars,stmts,exp);
 		

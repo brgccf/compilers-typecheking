@@ -73,7 +73,7 @@ OP
 	;
 Identifier
 	:
-		[a-zA-Z]([a-zA-Z]|[0-9]|['_'])*
+		([a-zA-Z]|'_')([a-zA-Z]|'_'|[0-9])*
 	;
 Comment_line
 	:

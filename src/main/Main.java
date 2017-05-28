@@ -23,7 +23,7 @@ public class Main {
 		ASTBuilder visitor = new ASTBuilder();
 		Program program = (Program) visitor.visit(tree);
 		PrettyPrintVisitor pt = new PrettyPrintVisitor();
-		//program.accept(pt);
+		program.accept(pt);
 		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
 		program.accept(stVis);
 		program.accept(new TypeCheckVisitor(stVis.getSymbolTable()));
