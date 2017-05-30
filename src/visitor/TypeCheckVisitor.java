@@ -148,20 +148,20 @@ public class TypeCheckVisitor implements TypeVisitor {
 	}
 
 	public Type visit(IntArrayType n) {
-		return new IntegerType();
+		return n;
 	}
 
 	public Type visit(BooleanType n) {
-		return new BooleanType();
+		return n;
 	}
 
 	public Type visit(IntegerType n) {
-		return new IntegerType();
+		return n;
 	}
 
 	// String s;
 	public Type visit(IdentifierType n) {
-		return null;
+		return n;
 	}
 
 	// StatementList sl;
@@ -208,20 +208,13 @@ public class TypeCheckVisitor implements TypeVisitor {
 	// Identifier i;
 	// Exp e;
 	public Type visit(Assign n) {
-		//n.i.accept(this);
-		//n.e.accept(this);
 		Type t1 = n.i.accept(this);
-		if(symbolTable.compareTypes(t1, new IntArrayType()))
-		{
-			t1 = new IntegerType();
-		}
 		Type t2 = n.e.accept(this);
-		boolean result = this.symbolTable.compareTypes(t1, t2);
-		if(!result)
-		{
-			System.out.println("There was a type error on Assignment " + n.e.toString());
-			//System.exit(0);
+		
+		if(!symbolTable.compareTypes(symbolTable.getVarType(currMethod, currClass, n.i.s), t2)) {
+			System.out.println("Assign Erro! " + n.i.s + " não é do mesmo tipo do valor atribuído");
 		}
+		
 		return null;
 	}
 
@@ -293,55 +286,66 @@ public class TypeCheckVisitor implements TypeVisitor {
 	public Type visit(Times n) {
 		Type t1 = n.e1.accept(this);
 		Type t2 = n.e2.accept(this);
-		boolean equal = this.symbolTable.compareTypes(t1, new IntegerType());
-		equal = true && this.symbolTable.compareTypes(new IntegerType(), t2);
-		if(!equal)
-		{
-			System.out.println("There was a type error in expression " + n.e1.toString() + " " + n.e2.toString());
+		if(!(t1 instanceof IntegerType)) {
+			System.out.println("Times Erro! Lado esquerdo da expressão não é inteiro");
+		}
+		if(!(t2 instanceof IntegerType)) {
+			System.out.println("Times Erro! Lado direito da expressão não é inteiro");
 		}
 		return new IntegerType();
 	}
 
 	// Exp e1,e2;
 	public Type visit(ArrayLookup n) {
-		n.e1.accept(this);
-		Type t = n.e2.accept(this);
-		boolean equal = this.symbolTable.compareTypes(t, new IntegerType());
-		if(!equal)
-		{
-			System.out.println("There was a type error on array lookup" + n.e1.toString() + " " + n.e2.toString());
+		Type t = n.e1.accept(this);
+		Type t2 = n.e2.accept(this);
+		
+		if(!(t instanceof IntArrayType)) {
+			System.out.println("Array lookup Erro! Não é um array");
 		}
+		
+		if(!(t2 instanceof IntegerType)) {
+			System.out.println("Array lookup Erro! Indice não é um numeral");
+		}
+		
 		return new IntegerType();
 	}
 
 	// Exp e;
 	public Type visit(ArrayLength n) {
-		n.e.accept(this);
+		Type t = n.e.accept(this);
+		if((t instanceof IntegerType) == false){
+			System.out.println("O tipo do tamanho do array nao e integer");
+		}
 		return new IntegerType();
 	}
 
 	// Exp e;
 	// Identifier i;
 	// ExpList el;
-	public Type visit(Call n) {
-		Class ctemp = this.currClass;
-		Method mtemp = this.currMethod;
-		
-		n.e.accept(this);
-		//n.i.accept(this);
-		Type methodType = symbolTable.getMethodType(n.i.s, ctemp.getId());
-		Type expType = null;
-		for (int i = 0; i < n.el.size(); i++) {
-			//n.el.elementAt(i).accept(this);
-			if(n.el.elementAt(i) != null)
-			{
-				expType = n.el.elementAt(i).accept(this);
+	public Type visit(Call n) {		
+		Type ttemp = n.e.accept(this);
+		Class ctemp;
+		Method mtemp = null;
+		if(ttemp instanceof IdentifierType){
+			ctemp = symbolTable.getClass(((IdentifierType) ttemp).s);
+			if(ctemp == null){
+				System.out.println("A Classe" + ctemp.getId() + "nao existe");
+			}
+			else{
+				mtemp = ctemp.getMethod(n.i.s);
+				for(int i = 0; i < n.el.size(); i++){
+					if (!symbolTable.compareTypes(n.el.elementAt(i).accept(this), mtemp.getParamAt(i).type())){
+						System.out.println("Parametros invalidos no método " + mtemp.getId() + " na class " + ctemp.getId());
+					}
+				}
 			}
 		}
-		this.currClass = ctemp;
-		this.currMethod = mtemp;
-		if(methodType == null) return expType;
-		else return methodType;
+		else{
+			System.out.println("Definicao invalida de classe");
+		}
+		if(mtemp == null) return null;
+		return mtemp.type();
 	}
 
 	// int i;
@@ -365,21 +369,27 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	public Type visit(This n) {
 		//n.accept(this);
-		return null;
+		return currClass.type();
 	}
 
 	// Exp e;
 	public Type visit(NewArray n) {
-		n.e.accept(this);
-		return null;
+		Type t = n.e.accept(this);
+		if((t instanceof IntegerType) == false){
+			System.out.println("A declaracao do new array nao e Integer!");
+		}
+		return new IntArrayType();
 	}
 
 	// Identifier i;
 	public Type visit(NewObject n) {
 		//n.i.accept(this);
-		this.currClass = this.symbolTable.getClass(n.i.s);
-		this.currMethod = null;
-		return null;
+		Class c = this.symbolTable.getClass(n.i.toString());
+		if(c == null){
+			System.out.println("O objeto nao existe" + n.i.toString());
+			return null;
+		}
+		return c.type();
 	}
 
 	// Exp e;
@@ -394,6 +404,6 @@ public class TypeCheckVisitor implements TypeVisitor {
 
 	// String s;
 	public Type visit(Identifier n) {
-		return symbolTable.getVarType(this.currMethod, this.currClass, n.s);
+		return new IdentifierType(n.s);
 	}
 }
