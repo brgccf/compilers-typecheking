@@ -148,15 +148,15 @@ public class TypeCheckVisitor implements TypeVisitor {
 	}
 
 	public Type visit(IntArrayType n) {
-		return n;
+		return new IntArrayType();
 	}
 
 	public Type visit(BooleanType n) {
-		return n;
+		return new BooleanType();
 	}
 
 	public Type visit(IntegerType n) {
-		return n;
+		return new IntegerType();
 	}
 
 	// String s;
@@ -314,7 +314,7 @@ public class TypeCheckVisitor implements TypeVisitor {
 	// Exp e;
 	public Type visit(ArrayLength n) {
 		Type t = n.e.accept(this);
-		if((t instanceof IntegerType) == false){
+		if((t instanceof IntArrayType) == false){
 			System.out.println("O tipo do tamanho do array nao e integer");
 		}
 		return new IntegerType();
